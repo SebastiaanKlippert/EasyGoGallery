@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>{{ .URLPath }}</title>
+ </head>
+ <body>
+  {{ range .Thumbs }}<div><img src="{{ (ThumbURL .) }}"></div>{{ end }}
+ </body>
+</html>
