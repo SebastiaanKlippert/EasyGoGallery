@@ -35,7 +35,7 @@ func serveGallery(w http.ResponseWriter, r *http.Request) {
 
 	//Add template functions
 	fm := template.FuncMap{
-		"ThumbURL": g.ThumbURL,
+		"ImgURL": g.ImgURL,
 	}
 
 	//Parse template
@@ -99,11 +99,13 @@ func (g *Gallery) collectImages(path string, info os.FileInfo, err error) error 
 	return nil
 }
 
-func (g *Gallery) ThumbURL(img string) string {
+func (g *Gallery) ImgURL(img, thumb string) string {
 	uv := make(url.Values)
 	uv.Add("gallery", g.URLPath)
 	uv.Add("file", img)
-	uv.Add("size", strconv.Itoa(g.ThumbSize))
+	if thumb == "t" {
+		uv.Add("size", strconv.Itoa(g.ThumbSize))
+	}
 	return fmt.Sprintf("%s/thumb?%s", g.BaseURL, uv.Encode())
 }
 

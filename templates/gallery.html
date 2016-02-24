@@ -4,6 +4,6 @@
   <title>{{ .URLPath }}</title>
  </head>
  <body>
-  {{ range .Thumbs }}<div><img src="{{ (ThumbURL .) }}"></div>{{ end }}
+  {{ range .Thumbs }}<div><a href='{{ (ImgURL . "f") }}'><img src='{{ (ImgURL . "t") }}'></a></div>{{ end }}
  </body>
 </html>
