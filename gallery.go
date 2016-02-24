@@ -13,7 +13,7 @@ import (
 
 var (
 	//TODO config
-	baseURL      = "http://localhost:6543"
+	baseURL      = "http://localhost"
 	galleryPath  = "./galleries"
 	templatePath = "./templates"
 	thumbSize    = 120
@@ -106,7 +106,7 @@ func (g *Gallery) ImgURL(img, thumb string) string {
 	if thumb == "t" {
 		uv.Add("size", strconv.Itoa(g.ThumbSize))
 	}
-	return fmt.Sprintf("%s/thumb?%s", g.BaseURL, uv.Encode())
+	return fmt.Sprintf("%s/image?%s", g.BaseURL, uv.Encode())
 }
 
 func isPictureExt(ext string) bool {
