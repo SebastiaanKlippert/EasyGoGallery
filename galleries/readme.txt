@@ -1,0 +1,1 @@
+Create a folder for each gallery in this folder
