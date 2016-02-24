@@ -13,7 +13,7 @@ import (
 
 var (
 	//TODO config
-	baseURL      = "http://thuis.klippert.nl:6543"
+	baseURL      = "http://localhost:6543"
 	galleryPath  = "./galleries"
 	templatePath = "./templates"
 	thumbSize    = 120
