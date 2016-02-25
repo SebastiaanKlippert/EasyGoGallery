@@ -12,14 +12,21 @@ import (
 func serveFile(w http.ResponseWriter, r *http.Request) {
 
 	path := ""
-	size := r.FormValue("size")
+        file := strings.Trim(r.FormValue("file"),  `./\`)
+        size := r.FormValue("size")
 	if size == "" {
 		//original
-		path = filepath.Join(filepath.Dir(os.Args[0]), galleryPath, r.FormValue("gallery"), r.FormValue("file"))
+		path = filepath.Join(filepath.Dir(os.Args[0]), galleryPath, r.FormValue("gallery"), file)
 	} else {
 		//thumbnail
-		path = filepath.Join(filepath.Dir(os.Args[0]), galleryPath, r.FormValue("gallery"), fmt.Sprintf("thumbs%s", size), r.FormValue("file"))
+		path = filepath.Join(filepath.Dir(os.Args[0]), galleryPath, r.FormValue("gallery"), fmt.Sprintf("thumbs%s", size), file)
 	}
+
+        ext := filepath.Ext(path)
+        if !isPictureExt(ext) {
+           fmt.Fprintln(w, "Not an image file")
+           return
+        } 
 
 	//Or ioutil.ReadFile...
 	file, err := os.Open(path)
@@ -30,7 +37,7 @@ func serveFile(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 	//set content type
-	mimeType := mime.TypeByExtension(filepath.Ext(r.FormValue("file")))
+	mimeType := mime.TypeByExtension(ext)
 	if mimeType != "" {
 		w.Header().Set("Content-Type", mimeType)
 	}
