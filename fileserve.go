@@ -30,20 +30,20 @@ func serveFile(w http.ResponseWriter, r *http.Request) {
         } 
 
 	//Or ioutil.ReadFile...
-	file, err := os.Open(path)
+	fh, err := os.Open(path)
 	if err != nil {
 		fmt.Println(err)
 		fmt.Fprintf(w, "Cannot open file %s", r.FormValue("file"))
 		return
 	}
-	defer file.Close()
+	defer fh.Close()
 	//set content type
 	mimeType := mime.TypeByExtension(ext)
 	if mimeType != "" {
 		w.Header().Set("Content-Type", mimeType)
 	}
 	//output data
-	io.Copy(w, file)
+	io.Copy(w, fh)
 
 	return
 }
