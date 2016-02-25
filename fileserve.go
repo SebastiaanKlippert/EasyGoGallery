@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+        "strings"
 )
 
 func serveFile(w http.ResponseWriter, r *http.Request) {
