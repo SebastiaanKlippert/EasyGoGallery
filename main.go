@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	err := http.ListenAndServe(":6543", GalleryHandler{})
+	err := http.ListenAndServe(":80", GalleryHandler{})
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -2,8 +2,52 @@
 <html>
  <head>
   <title>{{ .URLPath }}</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <style>
+  .imgcol {
+	padding: 5px;
+    display: inline-block;
+    vertical-align: middle;
+	horizontal-align: middle;
+    float: none;
+  }
+  body {
+    background-color: {{ .BgColor }};
+ }
+ </style>
  </head>
  <body>
-  {{ range .Thumbs }}<div><a href='{{ (ImgURL . "f") }}'><img src='{{ (ImgURL . "t") }}'></a></div>{{ end }}
+  <div class="container-fluid">
+   <div class="row">
+   <div class="col-md-12 text-center"><img src='{{ (ImgURL .HeaderIMG "f") }}'></div>
+   </div>
+   <div class="row">
+   <div class="col-md-1"></div>
+   <div class="col-md-10">
+   <div class="row">
+    <div class="col-md-6 text-left">
+      {{ if (gt .Page 0) -}}
+	  <a href='{{ (PageURL "f") }}'><b>Previous Page</b></a>
+	  {{- end}}
+    </div>	
+	<div class="col-md-6 text-right">
+	  <a href='{{ (PageURL "t") }}'><b>Next Page</b></a>
+	</div> 
+	</div>
+    {{ range $row := .Rows -}}
+     <div class="row">
+     {{ range $col := $.Columns -}}
+	  <div class="col-md-1 imgcol">
+	  {{ if (ImgPosExists $row $col) -}}
+       <a href='{{ (ImgURLPos $row $col "f") }}'><img class="img-responsive center-block" src='{{ (ImgURLPos $row $col "t") }}'></a>
+	  {{- end }}
+	  </div>
+     {{- end }}
+	</div>
+    {{- end }}
+  </div>	
+  <div class="col-md-1"></div>
+  </div>
+ </div>
  </body>
 </html>

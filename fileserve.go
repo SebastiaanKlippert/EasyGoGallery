@@ -7,14 +7,14 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-        "strings"
+	"strings"
 )
 
 func serveFile(w http.ResponseWriter, r *http.Request) {
 
 	path := ""
-        file := strings.Trim(r.FormValue("file"),  `./\`)
-        size := r.FormValue("size")
+	file := strings.Trim(r.FormValue("file"), `./\`)
+	size := r.FormValue("size")
 	if size == "" {
 		//original
 		path = filepath.Join(filepath.Dir(os.Args[0]), galleryPath, r.FormValue("gallery"), file)
@@ -23,11 +23,11 @@ func serveFile(w http.ResponseWriter, r *http.Request) {
 		path = filepath.Join(filepath.Dir(os.Args[0]), galleryPath, r.FormValue("gallery"), fmt.Sprintf("thumbs%s", size), file)
 	}
 
-        ext := filepath.Ext(path)
-        if !isPictureExt(ext) {
-           fmt.Fprintln(w, "Not an image file")
-           return
-        } 
+	ext := filepath.Ext(path)
+	if !isPictureExt(ext) {
+		fmt.Fprintln(w, "Not an image file")
+		return
+	}
 
 	//Or ioutil.ReadFile...
 	fh, err := os.Open(path)
