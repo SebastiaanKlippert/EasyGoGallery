@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>{{ .Gallery }}{{ .FileName }}</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <style>
+  body {
+    background-color: {{ .BgColor }};
+  }
+  a {
+	font-size: 125%;
+    color: {{ .NavColor }};	
+  }
+ </style>
+ </head>
+ <body>
+  <div class="container-fluid">
+   <div class="row">
+   <div class="col-xs-12 text-center"><a href='{{ .GalleryURL }}'><img src='{{ .HeaderFileURL }}' style="padding:10px;"></a></div>
+   </div>
+   <div class="row">
+   <div class="col-xs-1"></div>
+   <div class="col-xs-10">
+   <div class="row">
+    <div class="col-xs-4 text-left">
+	Previous image
+    </div>	
+    <div class="col-xs-4 text-center">
+	  <a href='{{ .ToPageURL }}'><b>Back to page {{ .Page }}</b></a>
+    </div>		
+	<div class="col-xs-4 text-right">
+	Next image
+	</div> 
+   </div>
+   <div class="row">
+    <div class="col-xs-12 text-center">
+	 <img src='{{ .ImageURL }}'>
+	</div>
+   </div>	
+  </div>	
+  <div class="col-xs-1"></div>
+  </div>
+ </div>
+ </body>
+</html>

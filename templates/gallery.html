@@ -13,40 +13,50 @@
   }
   body {
     background-color: {{ .BgColor }};
- }
+  }
+  a {
+	font-size: 125%;
+    color: {{ .NavColor }};	
+  }
  </style>
  </head>
  <body>
   <div class="container-fluid">
    <div class="row">
-   <div class="col-md-12 text-center"><img src='{{ (ImgURL .HeaderIMG "f") }}'></div>
+   <div class="col-xs-12 text-center"><a href='{{ .GalleryURL }}'><img src='{{ (FileURL 1 .HeaderIMG "f") }}' style="padding:10px;"></a></div>
    </div>
    <div class="row">
-   <div class="col-md-1"></div>
-   <div class="col-md-10">
+   <div class="col-xs-1"></div>
+   <div class="col-xs-10">
    <div class="row">
-    <div class="col-md-6 text-left">
+    <div class="col-xs-4 text-left">
       {{ if (gt .Page 0) -}}
 	  <a href='{{ (PageURL "f") }}'><b>Previous Page</b></a>
 	  {{- end}}
     </div>	
-	<div class="col-md-6 text-right">
+    <div class="col-xs-2 text-center">
+      {{ if .HasVideos -}}
+	  <a href='{{ .GalleryURL }}'><b>Images</b></a>
+	  {{- end}}
+    </div>		
+    <div class="col-xs-2 text-center">
+      {{ if .HasVideos -}}
+	  <a href='{{ .VideoURL }}'><b>Videos</b></a>
+	  {{- end}}
+    </div>		
+	<div class="col-xs-4 text-right">
+	  {{ if (IsLastPage) -}}
 	  <a href='{{ (PageURL "t") }}'><b>Next Page</b></a>
+	  {{- end}}
 	</div> 
 	</div>
-    {{ range $row := .Rows -}}
-     <div class="row">
-     {{ range $col := $.Columns -}}
-	  <div class="col-md-1 imgcol">
-	  {{ if (ImgPosExists $row $col) -}}
-       <a href='{{ (ImgURLPos $row $col "f") }}'><img class="img-responsive center-block" src='{{ (ImgURLPos $row $col "t") }}'></a>
-	  {{- end }}
-	  </div>
-     {{- end }}
-	</div>
-    {{- end }}
+	{{ if .ServingVideo -}}
+	 {{template "movies.html" .}}
+	{{ else }}
+	 {{template "images.html" .}}
+	{{- end }}
   </div>	
-  <div class="col-md-1"></div>
+  <div class="col-xs-1"></div>
   </div>
  </div>
  </body>

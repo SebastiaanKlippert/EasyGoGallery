@@ -1,0 +1,14 @@
+{{ range $row := $.Rows -}}
+ <div class="row">
+ {{ range $col := $.Columns -}}
+  <div class="col-xs-4 imgcol">
+  {{ if (ImgPosExists $row $col) -}}
+  <video width='{{ $.VidWidth }}' height='{{ $.VidHeight }}' poster='{{ (ImgURLPos $row $col "t") }}' controls preload="none">
+  <source src='{{ (ImgURLPos $row $col "f") }}' type="video/mp4">
+  Your browser does not support the video tag
+  </video> 
+  {{- end }}
+  </div>
+ {{- end }}
+ </div>
+{{- end }}

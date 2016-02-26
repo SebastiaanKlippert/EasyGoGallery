@@ -1,0 +1,11 @@
+{{ range $row := $.Rows -}}
+ <div class="row">
+ {{ range $col := $.Columns -}}
+  <div class="col-xs-1 imgcol">
+  {{ if (ImgPosExists $row $col) -}}
+   <a href='{{ (ImgURLPos $row $col "f") }}'><img class="img-responsive center-block" src='{{ (ImgURLPos $row $col "t") }}'></a>
+  {{- end }}
+  </div>
+ {{- end }}
+</div>
+{{- end }}

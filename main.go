@@ -19,8 +19,10 @@ func (h GalleryHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch r.URL.Path {
 	case "", "/":
 		index(w, r)
-	case "/image":
+	case "/file":
 		serveFile(w, r)
+	case "/image":
+		serveImage(w, r)
 	default:
 		serveGallery(w, r)
 	}
