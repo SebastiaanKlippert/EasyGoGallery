@@ -26,7 +26,9 @@
  <body>
   <div class="container-fluid">
    <div class="row">
-   <div class="col-xs-12 text-center"><a href='{{ .GalleryURL }}'><img src='{{ (FileURL 1 .HeaderIMG false) }}' style="padding:10px;"></a></div>
+   <div class="col-xs-1"><a href='{{ .BaseURL }}'>Index</a></div>
+   <div class="col-xs-10 text-center"><a href='{{ .GalleryURL }}'><img src='{{ (FileURL 1 .HeaderIMG false) }}' style="padding:10px;"></a></div>
+   <div class="col-xs-1"></div>
    </div>
    <div class="row">
    <div class="col-xs-1"></div>

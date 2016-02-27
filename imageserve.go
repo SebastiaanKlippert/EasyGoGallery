@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -39,6 +40,10 @@ func serveImage(w http.ResponseWriter, r *http.Request) {
 	ip.FileName = strings.Trim(r.FormValue("name"), `./\`)
 	ip.GalleryURL = fmt.Sprintf("%s/%s", g.BaseURL, g.URLPath)
 	ip.ToPageURL = fmt.Sprintf("%s?page=%s", ip.GalleryURL, ip.Page)
+
+	//Non-zero based page for display
+	ip.PagePlusOne, _ = strconv.Atoi(ip.Page)
+	ip.PagePlusOne++
 
 	//Get URL to current image and header
 	g.ServeImageRAW = true
@@ -80,6 +85,7 @@ type ImagePage struct {
 	FileName      string
 	Gallery       string
 	Page          string
+	PagePlusOne   int
 	GalleryURL    string
 	ToPageURL     string
 	HeaderFileURL string

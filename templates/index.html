@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>{{ .Title }}</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <style>
+  .gallimg {
+    box-shadow: 8px 8px 12px #888888;
+  }
+  .gall {
+	padding: 20px;
+  }
+ </style>
+ </head>
+ <body>
+  <div class="container-fluid">
+   {{ range .Galleries }}
+   <div class="row">
+    <div class="col-xs-12 col-md-6 text-center gall">
+     <a href='{{ .URL }}'><img src='{{ .ImgURL }}' class="gallimg"></a>
+    </div>
+   {{ end }}
+</div>
+ </div>
+ </body>
+</html>
