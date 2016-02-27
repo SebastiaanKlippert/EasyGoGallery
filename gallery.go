@@ -14,18 +14,14 @@ import (
 )
 
 const (
-	//TODO config
-	baseURL        = "http://localhost"
 	galleryPath    = "./galleries"
 	galleryImgPath = "/img"
 	galleryVidPath = "/vid"
 	thumbPath      = "/thumbs"
 	templatePath   = "./templates"
 	configFile     = "config.json"
-	numCols        = 12
-	numRows        = 12
-	numVidCols     = 3
-	numVidRows     = 16
+	numCols        = 12 //fixed for now
+	numVidCols     = 3  //fixed for now
 	imgPadding     = 10
 	vidWidth       = 480
 	vidHeight      = 360
@@ -33,22 +29,24 @@ const (
 )
 
 type GalleryConfig struct {
-	BgColor   string
-	NavColor  string
-	HeaderIMG string
+	BgColor     string
+	NavColor    string
+	ShadowColor string
+	HeaderIMG   string
+	NumImgRows  int
+	NumVidRows  int
 }
 
 func serveGallery(w http.ResponseWriter, r *http.Request) {
 
 	//Create gallery object
 	g := new(Gallery)
-	g.BaseURL = baseURL
+	g.BaseURL = cfg.BaseURL
 	g.URLPath = strings.TrimSuffix(strings.Trim(r.URL.Path, `/\`), "/movies")
-	g.GalleryURL = fmt.Sprintf("%s/%s", baseURL, g.URLPath)
+	g.GalleryURL = fmt.Sprintf("%s/%s", g.BaseURL, g.URLPath)
 	g.VideoURL = fmt.Sprintf("%s%s", g.GalleryURL, "/movies")
 	g.ServingVideo = strings.HasSuffix(r.URL.Path, "/movies")
 	g.Page, _ = strconv.Atoi(r.FormValue("page"))
-	g.PageSize = numRows * numCols
 	g.GalleryPath = filepath.Join(filepath.Dir(os.Args[0]), galleryPath, g.URLPath)
 	g.VidWidth = vidWidth
 	g.VidHeight = vidHeight
@@ -97,13 +95,15 @@ func serveGallery(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//Fill number of rows
-	numR := numRows
+	numR := g.NumImgRows
 	if g.ServingVideo {
-		numR = numVidRows
+		numR = g.NumVidRows
 	}
 	for i := 0; i < numR; i++ {
 		g.Rows = append(g.Rows, i)
 	}
+
+	g.PageSize = numR * numC
 
 	//List thumbs, fow now we assume there is a thumb present for each image
 	g.listThumbs(g.ServingVideo)
@@ -142,8 +142,10 @@ func serveGallery(w http.ResponseWriter, r *http.Request) {
 type Gallery struct {
 	Error error
 
-	BgColor   string
-	NavColor  string
+	BgColor     string
+	NavColor    string
+	ShadowColor string
+
 	HeaderIMG string
 
 	BaseURL string
@@ -154,6 +156,9 @@ type Gallery struct {
 
 	HasVideos    bool
 	ServingVideo bool
+
+	NumImgRows int
+	NumVidRows int
 
 	Page     int
 	PageSize int
@@ -209,19 +214,19 @@ func (g *Gallery) collectImages(path string, info os.FileInfo, err error) error 
 	return nil
 }
 
-//FileURL returns the GET URL for file, if file is a thumb, thumb should be set to "t"
+//FileURL returns the GET URL for file, if file is a thumb, thumb should be set to true
 //The filetype is 0 for gallery images, 1 for global images or 2 for videos
 //The returned linked is in format http://localhost/file?name=xxx.ext&filetype=1&gallery=xxx&thumb=true for raw files or
 //http://localhost/image?name=xxx.ext&filetype=0&gallery=xxx for gallery image pages
 //Where http://localhost/ is the baseURL.
-func (g *Gallery) FileURL(filetype int, file, thumb string) string {
+func (g *Gallery) FileURL(filetype int, file string, thumb bool) string {
 	uv := make(url.Values)
-	if filetype == fileTypeVideo && thumb != "t" {
+	if filetype == fileTypeVideo && !thumb {
 		//strip one extension (thumb is xxx.mp4.jpg, video is xxx.mp4)
 		file = strings.TrimSuffix(file, filepath.Ext(file))
 	}
 	how := "file"
-	if thumb != "t" && filetype == fileTypeGallery && g.ServeImageRAW == false {
+	if thumb == false && filetype == fileTypeGallery && g.ServeImageRAW == false {
 		how = "image"
 		uv.Add("page", strconv.Itoa(g.Page))
 	} else {
@@ -229,16 +234,16 @@ func (g *Gallery) FileURL(filetype int, file, thumb string) string {
 	}
 	uv.Add("gallery", g.URLPath)
 	uv.Add("name", file)
-	if thumb == "t" {
+	if thumb {
 		uv.Add("thumb", "true")
 	}
 	return fmt.Sprintf("%s/%s?%s", g.BaseURL, how, uv.Encode())
 }
 
 //ImgURLPos returns the GET URL ImgURL for the image at row r and col c at g.Page,
-//if img is a thumb, thumb should be set to "t".
+//if img is a thumb, thumb should be set to true.
 //Both r and c are zero-based.
-func (g *Gallery) ImgURLPos(r, c int, thumb string) string {
+func (g *Gallery) ImgURLPos(r, c int, thumb bool) string {
 	//calculate image pos
 	p := (r * len(g.Columns)) + c
 	if p < 0 || len(g.FileNames)-1 < p {
@@ -261,15 +266,15 @@ func (g *Gallery) ImgPosExists(r, c int) bool {
 	return true
 }
 
-//PageURL returns the URL to the next (if next == "t") or previous page
-func (g *Gallery) PageURL(next string) string {
+//PageURL returns the URL to the next (if next == true) or previous page
+func (g *Gallery) PageURL(next bool) string {
 	p := g.Page
-	if next == "t" {
+	if next {
 		p++
 	} else {
 		p--
 	}
-	return fmt.Sprintf("%s/%s?page=%d", baseURL, g.URLPath, p)
+	return fmt.Sprintf("%s/%s?page=%d", g.BaseURL, g.URLPath, p)
 }
 
 //IsLastPage returns if the last page has been reached
@@ -291,5 +296,8 @@ func (g *Gallery) ReadConfig() error {
 	g.BgColor = config.BgColor
 	g.NavColor = config.NavColor
 	g.HeaderIMG = config.HeaderIMG
+	g.NumImgRows = config.NumImgRows
+	g.NumVidRows = config.NumVidRows
+	g.ShadowColor = config.ShadowColor
 	return nil
 }

@@ -1,13 +1,23 @@
 package main
 
 import (
-	"fmt"
+	"encoding/json"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 )
 
+var cfg *Config
+
 func main() {
-	err := http.ListenAndServe(":80", GalleryHandler{})
+	err := readConfig()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Starting HTTP server on ", cfg.ListenAddr)
+	err = http.ListenAndServe(cfg.ListenAddr, GalleryHandler{})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -26,9 +36,22 @@ func (h GalleryHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	default:
 		serveGallery(w, r)
 	}
-
 }
 
-func index(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Welcome")
+type Config struct {
+	ListenAddr string
+	BaseURL    string
+}
+
+func readConfig() error {
+	b, err := ioutil.ReadFile(filepath.Join(filepath.Dir(os.Args[0]), configFile))
+	if err != nil {
+		return err
+	}
+	cfg = new(Config)
+	err = json.Unmarshal(b, cfg)
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -1,0 +1,4 @@
+{
+	"ListenAddr" : ":80",
+	"BaseURL"    : "http://localhost"
+}
