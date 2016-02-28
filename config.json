@@ -1,4 +1,6 @@
 {
 	"ListenAddr" : ":80",
-	"BaseURL"    : "http://localhost"
+	"BaseURL"    : "http://localhost",
+	"CertFile"   : "",
+	"KeyFile"    : ""
 }

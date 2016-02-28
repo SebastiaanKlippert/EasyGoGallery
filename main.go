@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -16,16 +17,31 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("Starting HTTP server on ", cfg.ListenAddr)
-	err = http.ListenAndServe(cfg.ListenAddr, GalleryHandler{})
-	if err != nil {
-		log.Fatal(err)
+
+	if cfg.CertFile == "" {
+		log.Println("Starting HTTP server on ", cfg.ListenAddr)
+		err = http.ListenAndServe(cfg.ListenAddr, GalleryHandler{})
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		log.Println("Starting HTTPS server on ", cfg.ListenAddr)
+		err = http.ListenAndServeTLS(cfg.ListenAddr, cfg.CertFile, cfg.KeyFile, GalleryHandler{})
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
+
 }
 
 type GalleryHandler struct{}
 
 func (h GalleryHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if !checkAuth(r) {
+		fmt.Fprintln(w, "Unauthorized")
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
 	switch r.URL.Path {
 	case "", "/":
 		index(w, r)
@@ -41,6 +57,8 @@ func (h GalleryHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 type Config struct {
 	ListenAddr string
 	BaseURL    string
+	CertFile   string
+	KeyFile    string
 }
 
 func readConfig() error {
@@ -54,4 +72,9 @@ func readConfig() error {
 		return err
 	}
 	return nil
+}
+
+func checkAuth(r *http.Request) bool {
+	r.BasicAuth()
+	return true
 }
