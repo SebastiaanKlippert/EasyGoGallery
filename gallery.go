@@ -20,11 +20,7 @@ const (
 	thumbPath      = "/thumbs"
 	templatePath   = "./templates"
 	configFile     = "config.json"
-	numCols        = 12 //fixed for now
-	numVidCols     = 3  //fixed for now
 	imgPadding     = 10
-	vidWidth       = 480
-	vidHeight      = 360
 	serveImageRAW  = false //serve large images as is or in an HTML page
 )
 
@@ -33,8 +29,9 @@ type GalleryConfig struct {
 	NavColor    string
 	ShadowColor string
 	HeaderIMG   string
-	NumImgRows  int
-	NumVidRows  int
+	ImgPageSize int
+	VidPageSize int
+	VidType     string
 }
 
 func serveGallery(w http.ResponseWriter, r *http.Request) {
@@ -48,8 +45,6 @@ func serveGallery(w http.ResponseWriter, r *http.Request) {
 	g.ServingVideo = strings.HasSuffix(r.URL.Path, "/movies")
 	g.Page, _ = strconv.Atoi(r.FormValue("page"))
 	g.GalleryPath = filepath.Join(filepath.Dir(os.Args[0]), galleryPath, g.URLPath)
-	g.VidWidth = vidWidth
-	g.VidHeight = vidHeight
 	g.ServeImageRAW = serveImageRAW
 
 	//Check if image gallery exists
@@ -59,7 +54,7 @@ func serveGallery(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	//Check if image thumb dir exists
-	//TODO Create it
+	//TODO maybe sometime: Create it
 	_, err = os.Stat(filepath.Join(g.GalleryPath, galleryImgPath, thumbPath))
 	if err != nil {
 		fmt.Fprintf(w, "Cannot find image thumb dir %q\n", filepath.Join(g.GalleryPath, galleryImgPath, thumbPath))
@@ -85,25 +80,11 @@ func serveGallery(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//Fill number of columns
-	numC := numCols
 	if g.ServingVideo {
-		numC = numVidCols
+		g.PageSize = g.VidPageSize
+	} else {
+		g.PageSize = g.ImgPageSize
 	}
-	for i := 0; i < numC; i++ {
-		g.Columns = append(g.Columns, i)
-	}
-
-	//Fill number of rows
-	numR := g.NumImgRows
-	if g.ServingVideo {
-		numR = g.NumVidRows
-	}
-	for i := 0; i < numR; i++ {
-		g.Rows = append(g.Rows, i)
-	}
-
-	g.PageSize = numR * numC
 
 	//List thumbs, fow now we assume there is a thumb present for each image
 	g.listThumbs(g.ServingVideo)
@@ -157,14 +138,12 @@ type Gallery struct {
 	HasVideos    bool
 	ServingVideo bool
 
-	NumImgRows int
-	NumVidRows int
+	Page        int
+	PageSize    int
+	ImgPageSize int
+	VidPageSize int
 
-	Page     int
-	PageSize int
-
-	VidWidth  int
-	VidHeight int
+	VidType string
 
 	Columns []int
 	Rows    []int
@@ -175,6 +154,7 @@ type Gallery struct {
 
 	ServeImageRAW bool
 
+	isLastPage                bool
 	skipImages, skippedImages int
 	walkPath                  string
 }
@@ -209,6 +189,8 @@ func (g *Gallery) collectImages(path string, info os.FileInfo, err error) error 
 	}
 	g.FileNames = append(g.FileNames, name)
 	if len(g.FileNames) >= g.PageSize+1 { //+1 to determine if last page reached
+		g.FileNames = g.FileNames[:len(g.FileNames)-1]
+		g.isLastPage = true
 		return filepath.SkipDir
 	}
 	return nil
@@ -274,12 +256,16 @@ func (g *Gallery) PageURL(next bool) string {
 	} else {
 		p--
 	}
-	return fmt.Sprintf("%s/%s?page=%d", g.BaseURL, g.URLPath, p)
+	m := ""
+	if g.ServingVideo {
+		m = "/movies"
+	}
+	return fmt.Sprintf("%s/%s%s?page=%d", g.BaseURL, g.URLPath, m, p)
 }
 
 //IsLastPage returns if the last page has been reached
 func (g *Gallery) IsLastPage() bool {
-	return len(g.FileNames) > g.PageSize
+	return g.isLastPage
 }
 
 //ReadConfig reads config.json for this gallery from disk and sets the values in g
@@ -296,8 +282,9 @@ func (g *Gallery) ReadConfig() error {
 	g.BgColor = config.BgColor
 	g.NavColor = config.NavColor
 	g.HeaderIMG = config.HeaderIMG
-	g.NumImgRows = config.NumImgRows
-	g.NumVidRows = config.NumVidRows
 	g.ShadowColor = config.ShadowColor
+	g.VidPageSize = config.VidPageSize
+	g.ImgPageSize = config.ImgPageSize
+	g.VidType = config.VidType
 	return nil
 }

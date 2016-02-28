@@ -26,7 +26,7 @@ func serveImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	g.PageSize = g.NumImgRows * numCols
+	g.PageSize = g.ImgPageSize
 
 	//Create ImagePage object
 	ip := new(ImagePage)

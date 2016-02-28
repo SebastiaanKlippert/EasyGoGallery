@@ -1,11 +1,7 @@
-{{ range $row := $.Rows -}}
- <div class="row">
- {{ range $col := $.Columns -}}
-  <div class="col-xs-3 col-sm-2 col-md-1 imgcol">
-  {{ if (ImgPosExists $row $col) -}}
-   <a href='{{ (ImgURLPos $row $col false) }}'><img class="img-responsive center-block imgthumb" src='{{ (ImgURLPos $row $col true) }}'></a>
-  {{- end }}
+<div class="row"> 
+ {{ range $.FileNames -}} 
+  <div class="col-xs-4 col-sm-3 col-md-2 col-lg-1 imgcol">
+   <a href='{{ (FileURL 0 . false) }}'><img class="img-responsive center-block imgthumb" src='{{ (FileURL 0 . true) }}'></a>
   </div>
  {{- end }}
 </div>
-{{- end }}

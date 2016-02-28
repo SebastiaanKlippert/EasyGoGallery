@@ -14,13 +14,13 @@
  </head>
  <body>
   <div class="container-fluid">
-   {{ range .Galleries }}
    <div class="row">
-    <div class="col-xs-12 text-center gall">
+   {{ range .Galleries }}
+    <div class="col-xs-12 col-lg-6 text-center gall">
      <a href='{{ .URL }}'><img src='{{ .ImgURL }}' class="gallimg"></a>
     </div>
-   </div>
    {{ end }}
+   </div>
  </div>
  </body>
 </html>
