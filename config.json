@@ -2,5 +2,7 @@
 	"ListenAddr" : ":80",
 	"BaseURL"    : "http://localhost",
 	"CertFile"   : "",
-	"KeyFile"    : ""
+	"KeyFile"    : "",
+	"BasicAuthUser": "",
+	"BasicAuthPass": ""
 }

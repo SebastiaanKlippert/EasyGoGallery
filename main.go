@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -37,11 +36,11 @@ func main() {
 type GalleryHandler struct{}
 
 func (h GalleryHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if !checkAuth(r) {
-		fmt.Fprintln(w, "Unauthorized")
-		w.WriteHeader(http.StatusUnauthorized)
+
+	if cfg.BasicAuthUser != "" && !checkBasicAuth(w, r) {
 		return
 	}
+
 	switch r.URL.Path {
 	case "", "/":
 		index(w, r)
@@ -55,10 +54,12 @@ func (h GalleryHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 type Config struct {
-	ListenAddr string
-	BaseURL    string
-	CertFile   string
-	KeyFile    string
+	ListenAddr    string
+	BaseURL       string
+	CertFile      string
+	KeyFile       string
+	BasicAuthUser string
+	BasicAuthPass string
 }
 
 func readConfig() error {
@@ -74,7 +75,12 @@ func readConfig() error {
 	return nil
 }
 
-func checkAuth(r *http.Request) bool {
-	r.BasicAuth()
-	return true
+func checkBasicAuth(w http.ResponseWriter, r *http.Request) bool {
+	u, p, ok := r.BasicAuth()
+	if ok && u == cfg.BasicAuthUser && p == cfg.BasicAuthPass {
+		return true
+	}
+	w.Header().Add("Www-Authenticate", "Basic")
+	w.WriteHeader(http.StatusUnauthorized)
+	return false
 }
