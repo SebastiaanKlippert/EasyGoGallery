@@ -46,7 +46,7 @@ func serveFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//Or ioutil.ReadFile...
+	//Open file
 	fh, err := os.Open(path)
 	if err != nil {
 		fmt.Fprintf(w, "Cannot open file %s", r.FormValue("file"))
@@ -54,13 +54,13 @@ func serveFile(w http.ResponseWriter, r *http.Request) {
 	}
 	defer fh.Close()
 
-	//serve file
+	//Serve file
 	stat, err := fh.Stat()
 	if err != nil {
 		fmt.Fprintf(w, "Cannot open file %s", r.FormValue("file"))
 		return
 	}
-	http.ServeContent(w, r, r.FormValue("file"), stat.ModTime(), fh)
+	http.ServeContent(w, r, file, stat.ModTime(), fh)
 	return
 }
 
