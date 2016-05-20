@@ -1,8 +1,10 @@
 {
-	"ListenAddr" : ":80",
-	"BaseURL"    : "http://localhost",
-	"CertFile"   : "",
-	"KeyFile"    : "",
-	"BasicAuthUser": "",
-	"BasicAuthPass": ""
+	"ListenAddr" 	: ":80",
+	"BaseURL"   	: "http://localhost",
+	"CertFile"   	: "",
+	"KeyFile"    	: "",
+	"BasicAuthUser"	: "a",
+	"BasicAuthPass"	: "a",
+	"LogFile"		: "./log.txt",
+	"LogAuth"		: true
 }
