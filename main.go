@@ -33,6 +33,7 @@ func main() {
 		}
 	}
 
+	log.Printf("Running Go version %s", runtime.Version())
 	log.Printf("Using %d of %d CPUs", runtime.GOMAXPROCS(0), runtime.NumCPU())
 
 	if cfg.CertFile == "" {
