@@ -14,11 +14,11 @@ import (
 )
 
 const (
-	galleryPath    = "./galleries"
+	galleryPath    = "/data/galleries"
 	galleryImgPath = "/img"
 	galleryVidPath = "/vid"
 	thumbPath      = "/thumbs"
-	templatePath   = "./templates"
+	templatePath   = "/data/templates"
 	configFile     = "config.json"
 	imgPadding     = 10
 	serveImageRAW  = false //serve large images as is or in an HTML page
@@ -44,7 +44,7 @@ func serveGallery(w http.ResponseWriter, r *http.Request) {
 	g.VideoURL = fmt.Sprintf("%s%s", g.GalleryURL, "/movies")
 	g.ServingVideo = strings.HasSuffix(r.URL.Path, "/movies")
 	g.Page, _ = strconv.Atoi(r.FormValue("page"))
-	g.GalleryPath = filepath.Join(filepath.Dir(os.Args[0]), galleryPath, g.URLPath)
+	g.GalleryPath = filepath.Join(filepath.Clean(galleryPath), g.URLPath)
 	g.ServeImageRAW = serveImageRAW
 
 	//Check if image gallery exists
@@ -99,7 +99,7 @@ func serveGallery(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//Parse template
-	base := filepath.Join(filepath.Dir(os.Args[0]), templatePath)
+	base := filepath.Clean(templatePath)
 	tmpl, err := template.New("gallery.html").Funcs(fm).ParseFiles(
 		filepath.Join(base, "gallery.html"),
 		filepath.Join(base, "images.html"),

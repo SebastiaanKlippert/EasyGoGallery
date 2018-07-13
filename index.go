@@ -12,11 +12,11 @@ func index(w http.ResponseWriter, r *http.Request) {
 
 	idx := new(Index)
 	idx.Title = "EasyGoGallery"
-	idx.Galleries = listGalleries(filepath.Join(filepath.Dir(os.Args[0]), galleryPath))
+	idx.Galleries = listGalleries(filepath.Clean(galleryPath))
 
 	//Parse template
 	tmpl, err := template.New("index.html").ParseFiles(
-		filepath.Join(filepath.Dir(os.Args[0]), templatePath, "index.html"),
+		filepath.Join(filepath.Clean(templatePath), "index.html"),
 	)
 	if err != nil {
 		fmt.Fprintln(w, err)

@@ -18,7 +18,7 @@ const (
 //serveFile serves image or video files
 func serveFile(w http.ResponseWriter, r *http.Request) {
 
-	path := filepath.Join(filepath.Dir(os.Args[0]), galleryPath, r.FormValue("gallery"))
+	path := filepath.Join(filepath.Clean(galleryPath), r.FormValue("gallery"))
 	file := strings.Trim(r.FormValue("name"), `./\`)
 	filetype, _ := strconv.Atoi(r.FormValue("filetype"))
 	thumb, _ := strconv.ParseBool(r.FormValue("thumb"))

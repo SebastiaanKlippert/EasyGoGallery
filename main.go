@@ -59,6 +59,9 @@ func (h GalleryHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if cfg.BasicAuthUser != "" && !checkBasicAuth(w, r) {
 		return
 	}
+	if r.Method != http.MethodGet {
+		return
+	}
 
 	switch r.URL.Path {
 	case "", "/":

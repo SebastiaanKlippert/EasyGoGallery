@@ -17,7 +17,7 @@ func serveImage(w http.ResponseWriter, r *http.Request) {
 	g := new(Gallery)
 	g.BaseURL = cfg.BaseURL
 	g.URLPath = strings.Trim(r.FormValue("gallery"), `/\`)
-	g.GalleryPath = filepath.Join(filepath.Dir(os.Args[0]), galleryPath, g.URLPath)
+	g.GalleryPath = filepath.Join(filepath.Clean(galleryPath), g.URLPath)
 
 	//Parse config
 	err := g.ReadConfig()
@@ -60,7 +60,7 @@ func serveImage(w http.ResponseWriter, r *http.Request) {
 
 	//Parse template
 	tmpl, err := template.New("image.html").ParseFiles(
-		filepath.Join(filepath.Dir(os.Args[0]), templatePath, "image.html"),
+		filepath.Join(filepath.Clean(templatePath), "image.html"),
 	)
 	if err != nil {
 		fmt.Fprintln(w, err)
