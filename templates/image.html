@@ -26,19 +26,19 @@
    <div class="row">
     <div class="col-xs-1"></div>
     <div class="col-xs-3 text-left">
-	<a href='{{ .PrevImageURL }}'>Previous image</a>
+      {{if .PrevImageURL}}<a href='{{ .PrevImageURL }}'>Previous image</a>{{end}}
     </div>
     <div class="col-xs-4 text-center">
 	  <a href='{{ .ToPageURL }}'><b>Back to page {{ .PagePlusOne }}</b></a>
     </div>	
 	<div class="col-xs-3 text-right">
-	<a href='{{ .NextImageURL }}'>Next image</a>
+      {{if .NextImageURL}}<a href='{{ .NextImageURL }}'>Next image</a>{{end}}
 	</div>
 	<div class="col-xs-1"></div>
    </div>
    <div class="row">
     <div class="col-xs-12 text-center">
-	 <a href='{{ .NextImageURL }}'><img class="imgfull" src='{{ .ImageURL }}'></a>
+     {{if .NextImageURL}}<a href='{{ .NextImageURL }}'>{{end}}<img class="imgfull" src='{{ .ImageURL }}'></a>
 	</div>
    </div>
   </div>
